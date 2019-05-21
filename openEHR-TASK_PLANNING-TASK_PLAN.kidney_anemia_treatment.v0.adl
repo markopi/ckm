@@ -1,0 +1,934 @@
+archetype (adl_version=1.4; uid=6043a84e-80d4-4d07-b72a-aaa9bed64d84)
+	openEHR-TASK_PLANNING-TASK_PLAN.kidney_anemia_treatment.v0
+
+concept
+	[at0000]
+
+language
+	original_language = <[ISO_639-1::en]>
+
+description
+	original_author = <
+		["date"] = <"2019-03-27">
+		["organisation"] = <"org">
+	>
+	lifecycle_state = <"unmanaged">
+	details = <
+		["en"] = <
+			language = <[ISO_639-1::en]>
+		>
+	>
+	other_details = <
+		["licence"] = <"This work is licensed under the Creative Commons Attribution-ShareAlike 3.0 License. To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/3.0/.">
+		["custodian_organisation"] = <"openEHR Foundation">
+		["original_namespace"] = <"org.openehr">
+		["original_publisher"] = <"openEHR Foundation">
+		["custodian_namespace"] = <"org.openehr">
+		["MD5-CAM-1.0.1"] = <"7cbd982bc79a6c6ef7e542468e67bef5">
+		["build_uid"] = <"0cf73f5f-7919-3239-94eb-df712cd124f4">
+	>
+
+definition
+	TASK_PLAN[at0000] matches {    -- Kidney Anemia Treatment Plan
+		description matches {
+			DV_TEXT[at0001] matches {*}    -- Kidney anemia treatment plan - root
+		}
+		definition matches {
+			TASK_GROUP[at0002] matches {    -- Anemia Treatment
+				members cardinality matches {0..*; unordered} matches {
+					TASK_GROUP[at0003] occurrences matches {0..1} matches {    -- Initial Data and Prescription
+						members cardinality matches {0..*; unordered} matches {
+							PERFORMABLE_TASK[at0005] occurrences matches {0..1} matches {    -- Enter initial Hb and Ferritin measurements
+								action matches {
+									DEFINED_ACTION[at0006] matches {    -- Enter initial Hb and Ferritin measurements
+										prototype cardinality matches {0..*; unordered} matches {
+											ACTION[at0043] occurrences matches {0..1} matches {    -- ACTION
+												description matches {
+													ITEM_TREE[at0044] matches {    -- ItemTree
+														items cardinality matches {0..*; unordered} matches {
+															ELEMENT[at0045] occurrences matches {0..1} matches {    -- Enter initial Hb and Ferritin measurements
+																value matches {
+																	DV_TEXT matches {*}
+																}
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+								capture_dataset cardinality matches {0..*; unordered} matches {
+									CAPTURE_DATASET_SPEC[at0046] occurrences matches {0..1} matches {    -- CAPTURE_DATASET_SPEC-Hemoglobin value
+										form_id matches {"Hemoglobin value"}
+										template_id matches {"Renal_anemia_lab_report"}
+									}
+									CAPTURE_DATASET_SPEC[at0047] occurrences matches {0..1} matches {    -- CAPTURE_DATASET_SPEC-Ferritin value
+										form_id matches {"Ferritin value"}
+										template_id matches {"Renal_anemia_lab_report"}
+									}
+								}
+							}
+							PERFORMABLE_TASK[at0007] occurrences matches {0..1} matches {    -- Initial prescription for epoetin and Fe supplement
+								action matches {
+									DEFINED_ACTION[at0008] matches {    -- Prescribe the dose of epoetin in the iron supplement.
+										prototype cardinality matches {0..*; unordered} matches {
+											ACTION[at0049] occurrences matches {0..1} matches {    -- ACTION
+												description matches {
+													ITEM_TREE[at0050] matches {    -- ItemTree
+														items cardinality matches {0..*; unordered} matches {
+															ELEMENT[at0051] occurrences matches {0..1} matches {    -- Prescribe the dose of epoetin in the iron supplement.
+																value matches {
+																	DV_TEXT matches {*}
+																}
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+								capture_dataset cardinality matches {0..*; unordered} matches {
+									CAPTURE_DATASET_SPEC[at0048] occurrences matches {0..1} matches {    -- CAPTURE_DATASET_SPEC-Medication order
+										form_id matches {"Renal anemia therapy"}
+										template_id matches {"Renal_anemia_therapy"}
+									}
+								}
+							}
+						}
+						execution_type matches {|0|}
+					}
+					TASK_GROUP[at0009] occurrences matches {0..1} matches {    -- Treatment Monitoring and Adjustment
+						members cardinality matches {0..*; unordered} matches {
+							TASK_GROUP[at0010] occurrences matches {0..1} matches {    -- Hb Monitoring and Epoetin Adjustment
+								members cardinality matches {0..*; unordered} matches {
+									TASK_GROUP[at0012] occurrences matches {0..1} matches {    -- Epoetin Induction
+										members cardinality matches {0..*; unordered} matches {
+											PERFORMABLE_TASK[at0017] occurrences matches {0..1} matches {    -- Adjustment of Epoetin
+												action matches {
+													SUB_PLAN[at0018] matches {    -- SUB_PLAN
+														target matches {
+															allow_archetype TASK_PLAN[at0052] occurrences matches {0..*} matches {    -- Adjustment of Epoetin
+																include
+																	archetype_id/value matches {/openEHR-TASK_PLANNING-TASK_PLAN\.adjustment_of_epoetin\.v0/}
+															}
+														}
+													}
+												}
+												wait_spec matches {
+													TASK_WAIT matches {
+														events cardinality matches {0..*; unordered} matches {
+															TIMER_EVENT[at0019] occurrences matches {0..1} matches {    -- TIMER_EVENT
+																duration matches {P2W}
+															}
+														}
+													}
+												}
+											}
+										}
+										repeat_spec matches {
+											TASK_REPEAT[at0014] matches {    -- TASK_REPEAT
+												terminate_condition matches {
+													STATE_TRIGGER[at0015] matches {*}    -- Stop repeating group when target Hb level met
+												}
+											}
+										}
+										execution_type matches {|0|}
+									}
+									TASK_GROUP[at0013] occurrences matches {0..1} matches {    -- Hb Level Maintenance
+										members cardinality matches {0..*; unordered} matches {
+											PERFORMABLE_TASK[at0059] occurrences matches {0..1} matches {    -- Hemoglobin value
+												capture_dataset cardinality matches {0..*; unordered} matches {
+													CAPTURE_DATASET_SPEC[at0064] occurrences matches {0..1} matches {    -- CAPTURE_DATASET_SPEC-Hemoglobin value
+														form_id matches {"Hemoglobin value"}
+														template_id matches {"Renal_anemia_lab_report"}
+													}
+												}
+												action matches {
+													DEFINED_ACTION[at0060] matches {    -- Measure hemoglobin value
+														prototype cardinality matches {0..*; unordered} matches {
+															ACTION[at0061] occurrences matches {0..1} matches {    -- ACTION
+																description matches {
+																	ITEM_TREE[at0062] matches {    -- ItemTree
+																		items cardinality matches {0..*; unordered} matches {
+																			ELEMENT[at0063] occurrences matches {0..1} matches {    -- Measure hemoglobin value
+																				value matches {
+																					DV_TEXT matches {*}
+																				}
+																			}
+																		}
+																	}
+																}
+															}
+														}
+													}
+												}
+											}
+											PERFORMABLE_TASK[at0053] occurrences matches {0..1} matches {    -- Maintenance of the target hemoglobin
+												capture_dataset cardinality matches {0..*; unordered} matches {
+													CAPTURE_DATASET_SPEC[at0054] occurrences matches {0..1} matches {*}    -- CAPTURE_DATASET_SPEC-Medication order
+												}
+												action matches {
+													DEFINED_ACTION[at0055] matches {    -- Maintain target hemoglobin.
+														prototype cardinality matches {0..*; unordered} matches {
+															ACTION[at0056] occurrences matches {0..1} matches {    -- ACTION
+																description matches {
+																	ITEM_TREE[at0057] matches {    -- ItemTree
+																		items cardinality matches {0..*; unordered} matches {
+																			ELEMENT[at0058] occurrences matches {0..1} matches {    -- Maintain target hemoglobin.
+																				value matches {
+																					DV_TEXT matches {*}
+																				}
+																			}
+																		}
+																	}
+																}
+															}
+														}
+													}
+												}
+											}
+										}
+										repeat_spec matches {
+											TASK_REPEAT[at0016] matches {*}    -- Repeat indefinitely or until new kidney
+										}
+										execution_type matches {|0|}
+										wait_spec matches {
+											TASK_WAIT matches {
+												events cardinality matches {0..*; unordered} matches {
+													TIMER_EVENT[at0065] occurrences matches {0..1} matches {    -- TIMER_EVENT
+														duration matches {P4W}
+													}
+												}
+											}
+										}
+									}
+								}
+								execution_type matches {|0|}
+							}
+							TASK_GROUP[at0011] occurrences matches {0..1} matches {    -- Feritin Monitoring and Iron supplement Adjustment
+								members cardinality matches {0..*; unordered} matches {
+									PERFORMABLE_TASK[at0021] occurrences matches {0..1} matches {    -- Measures of iron stores parameters
+										capture_dataset cardinality matches {0..*; unordered} matches {
+											CAPTURE_DATASET_SPEC[at0068] occurrences matches {0..1} matches {    -- CAPTURE_DATASET_SPEC-Stocks of iron
+												form_id matches {"Stocks of iron"}
+												template_id matches {"Renal_anemia_lab_report"}
+											}
+										}
+										action matches {
+											DEFINED_ACTION[at0066] matches {    -- Measures of iron stores parameters
+												prototype cardinality matches {0..*; unordered} matches {
+													ACTION[at0067] occurrences matches {0..1} matches {    -- ACTION
+														description matches {
+															ITEM_TREE[at0069] matches {    -- ItemTree
+																items cardinality matches {0..*; unordered} matches {
+																	ELEMENT[at0070] occurrences matches {0..1} matches {    -- Measures of iron stores parameters
+																		value matches {
+																			DV_TEXT matches {*}
+																		}
+																	}
+																}
+															}
+														}
+													}
+												}
+											}
+										}
+										wait_spec matches {
+											TASK_WAIT matches {
+												events cardinality matches {0..*; unordered} matches {
+													TIMER_EVENT[at0022] occurrences matches {0..1} matches {    -- Wait 4 weeks
+														duration matches {P4W}
+													}
+												}
+											}
+										}
+									}
+									CONDITION_GROUP[at0023] occurrences matches {0..1} matches {    -- Fe Level Comparison
+										members cardinality matches {0..*; unordered} matches {
+											CONDITION_BRANCH[at0024] occurrences matches {0..1} matches {    -- Normal iron stores and satisfactory response to epoetin
+												members cardinality matches {0..*; unordered} matches {
+													PERFORMABLE_TASK[at0025] occurrences matches {0..1} matches {    -- Continue with maintenance therapy with iron.
+														capture_dataset cardinality matches {0..*; unordered} matches {
+															CAPTURE_DATASET_SPEC[at0076] occurrences matches {0..1} matches {    -- CAPTURE_DATASET_SPEC-Medication order
+																form_id matches {"Renal anemia therapy"}
+																template_id matches {"Renal_anemia_therapy"}
+															}
+														}
+														action matches {
+															DEFINED_ACTION[at0072] matches {    -- Continue with maintenance therapy with iron.
+																prototype cardinality matches {0..*; unordered} matches {
+																	ACTION[at0073] occurrences matches {0..1} matches {    -- ACTION
+																		description matches {
+																			ITEM_TREE[at0074] matches {    -- ItemTree
+																				items cardinality matches {0..*; unordered} matches {
+																					ELEMENT[at0075] occurrences matches {0..1} matches {    -- Continue with maintenance therapy with iron.
+																						value matches {
+																							DV_TEXT matches {*}
+																						}
+																					}
+																				}
+																			}
+																		}
+																	}
+																}
+															}
+														}
+													}
+												}
+												test matches {
+													BOOLEAN_CONTEXT_EXPRESSION[at0026] matches {    -- CONTEXT_EXPRESSION
+														name matches {"feHbOk"}
+														expression matches {"($ferritin >100 && $TSAT > 20 && $HRC < 10 && $CHr > 30) && ($hemoglonibDiff  > 10 || $hemoglobin >110)"}
+													}
+												}
+											}
+											CONDITION_BRANCH[at0027] occurrences matches {0..1} matches {    -- Insufficient iron stores or insufficient response to epoetin
+												members cardinality matches {0..*; unordered} matches {
+													TASK_GROUP[at0029] occurrences matches {0..1} matches {    -- Iron replacement therapy
+														members cardinality matches {0..*; unordered} matches {
+															PERFORMABLE_TASK[at0030] occurrences matches {0..1} matches {    -- Adjustment of iron supplement
+																capture_dataset cardinality matches {0..*; unordered} matches {
+																	CAPTURE_DATASET_SPEC[at0081] occurrences matches {0..1} matches {    -- CAPTURE_DATASET_SPEC-Medication order
+																		form_id matches {"Renal anemia therapy"}
+																		template_id matches {"Renal_anemia_therapy"}
+																	}
+																}
+																action matches {
+																	DEFINED_ACTION[at0077] matches {    -- Adjustment of iron supplement
+																		prototype cardinality matches {0..*; unordered} matches {
+																			ACTION[at0078] occurrences matches {0..1} matches {    -- ACTION
+																				description matches {
+																					ITEM_TREE[at0079] matches {    -- ItemTree
+																						items cardinality matches {0..*; unordered} matches {
+																							ELEMENT[at0080] occurrences matches {0..1} matches {    -- Adjustment of iron supplement
+																								value matches {
+																									DV_TEXT matches {*}
+																								}
+																							}
+																						}
+																					}
+																				}
+																			}
+																		}
+																	}
+																}
+															}
+															PERFORMABLE_TASK[at0031] occurrences matches {0..1} matches {    -- Measures of iron stores parameters
+																capture_dataset cardinality matches {0..*; unordered} matches {
+																	CAPTURE_DATASET_SPEC[at0082] occurrences matches {0..1} matches {    -- CAPTURE_DATASET_SPEC-Stocks of iron
+																		form_id matches {"Stocks of iron"}
+																		template_id matches {"Renal_anemia_lab_report"}
+																	}
+																}
+																action matches {
+																	DEFINED_ACTION[at0083] matches {    -- Measures of iron stores parameters
+																		prototype cardinality matches {0..*; unordered} matches {
+																			ACTION[at0084] occurrences matches {0..1} matches {    -- ACTION
+																				description matches {
+																					ITEM_TREE[at0085] matches {    -- ItemTree
+																						items cardinality matches {0..*; unordered} matches {
+																							ELEMENT[at0086] occurrences matches {0..1} matches {    -- Measures of iron stores parameters
+																								value matches {
+																									DV_TEXT matches {*}
+																								}
+																							}
+																						}
+																					}
+																				}
+																			}
+																		}
+																	}
+																}
+																wait_spec matches {
+																	TASK_WAIT matches {
+																		events cardinality matches {0..*; unordered} matches {
+																			TIMER_EVENT[at0032] occurrences matches {0..1} matches {    -- Wait 7 days
+																				duration matches {P7D}
+																			}
+																		}
+																	}
+																}
+															}
+														}
+														repeat_spec matches {
+															TASK_REPEAT[at0041] matches {    -- TASK_REPEAT
+																terminate_condition matches {
+																	STATE_TRIGGER[at0108] matches {    -- Fe High Enough or Too High
+																		expression matches {
+																			BOOLEAN_CONTEXT_EXPRESSION[at0109] matches {    -- BOOLEAN_CONTEXT_EXPRESSION
+																				name matches {"ferritinLevelExpr"}
+																				expression matches {"ferritin > 200"}
+																			}
+																		}
+																	}
+																}
+															}
+														}
+													}
+													CONDITION_GROUP[at0034] occurrences matches {0..1} matches {    -- Iron stores and epoetin response check
+														members cardinality matches {0..*; unordered} matches {
+															CONDITION_BRANCH[at0035] occurrences matches {0..1} matches {    -- Satisfactory response to iron replacement and epoetin therapy
+																members cardinality matches {0..*; unordered} matches {
+																	PERFORMABLE_TASK[at0038] occurrences matches {0..1} matches {    -- Medication order Fe
+																		capture_dataset cardinality matches {0..*; unordered} matches {
+																			CAPTURE_DATASET_SPEC[at0090] occurrences matches {0..1} matches {*}    -- CAPTURE_DATASET_SPEC-Medication order
+																		}
+																		action matches {
+																			DEFINED_ACTION[at0091] matches {    -- Continue with maintenance therapy with iron.
+																				prototype cardinality matches {0..*; unordered} matches {
+																					ACTION[at0092] occurrences matches {0..1} matches {    -- ACTION
+																						description matches {
+																							ITEM_TREE[at0093] matches {    -- ItemTree
+																								items cardinality matches {0..*; unordered} matches {
+																									ELEMENT[at0094] occurrences matches {0..1} matches {    -- Continue with maintenance therapy with iron.
+																										value matches {
+																											DV_TEXT matches {*}
+																										}
+																									}
+																								}
+																							}
+																						}
+																					}
+																				}
+																			}
+																		}
+																	}
+																}
+																test matches {
+																	BOOLEAN_CONTEXT_EXPRESSION[at0089] matches {    -- BOOLEAN_CONTEXT_EXPRESSION
+																		expression matches {"($ferritin > 200 && $ferritin < 800 && $TSAT < 50 && $HRC <2.5 && $CHr > 30 && $CHr < 36) && ($hemoglonibDiff  > 10 || $hemoglobin >110)"}
+																	}
+																}
+															}
+															CONDITION_BRANCH[at0036] occurrences matches {0..1} matches {    -- Insufficient response to iron replacement or epoetin therapy
+																members cardinality matches {0..*; unordered} matches {
+																	PERFORMABLE_TASK[at0039] occurrences matches {0..1} matches {    -- Further investigation of iron distribution disorder
+																		action matches {
+																			DEFINED_ACTION[at0096] matches {    -- Further investigation of iron distribution disorder
+																				prototype cardinality matches {0..*; unordered} matches {
+																					ACTION[at0097] occurrences matches {0..1} matches {    -- ACTION
+																						description matches {
+																							ITEM_TREE[at0098] matches {    -- ItemTree
+																								items cardinality matches {0..*; unordered} matches {
+																									ELEMENT[at0099] occurrences matches {0..1} matches {    -- Further investigation of iron distribution disorder
+																										value matches {
+																											DV_TEXT matches {*}
+																										}
+																									}
+																								}
+																							}
+																						}
+																					}
+																				}
+																			}
+																		}
+																	}
+																}
+																test matches {
+																	BOOLEAN_CONTEXT_EXPRESSION[at0095] matches {    -- BOOLEAN_CONTEXT_EXPRESSION
+																		expression matches {"($ferritin > 800 && $TSAT < 30 && $HRC >10 && $CHr < 30) || ($hemoglonibDiff  < 10 || $hemoglobin <110)"}
+																	}
+																}
+															}
+															CONDITION_BRANCH[at0037] occurrences matches {0..1} matches {    -- Over response to iron replacement therapy
+																members cardinality matches {0..*; unordered} matches {
+																	TASK_GROUP[at0040] occurrences matches {0..1} matches {    -- Continue with maintenance therapy with iron
+																		wait_spec matches {
+																			TASK_WAIT matches {
+																				events cardinality matches {0..*; unordered} matches {
+																					TIMER_EVENT[at0101] occurrences matches {0..1} matches {    -- TIMER_EVENT
+																						duration matches {P3M}
+																					}
+																				}
+																			}
+																		}
+																		members cardinality matches {0..*; unordered} matches {
+																			PERFORMABLE_TASK[at0102] occurrences matches {0..1} matches {    -- Continue with maintenance therapy with iron
+																				action matches {
+																					DEFINED_ACTION[at0103] matches {    -- DEFINED_ACTION
+																						prototype cardinality matches {0..*; unordered} matches {
+																							ACTION[at0104] occurrences matches {0..1} matches {    -- ACTION
+																								description matches {
+																									ITEM_TREE[at0105] matches {    -- ItemTree
+																										items cardinality matches {0..*; unordered} matches {
+																											ELEMENT[at0106] occurrences matches {0..1} matches {    -- Continue with maintenance therapy with iron
+																												value matches {
+																													DV_TEXT matches {*}
+																												}
+																											}
+																										}
+																									}
+																								}
+																							}
+																						}
+																					}
+																				}
+																				capture_dataset cardinality matches {0..*; unordered} matches {
+																					CAPTURE_DATASET_SPEC[at0107] occurrences matches {0..1} matches {    -- CAPTURE_DATASET_SPEC-Medication order
+																						form_id matches {"Renal anemia therapy"}
+																						template_id matches {"Renal_anemia_therapy"}
+																					}
+																				}
+																			}
+																		}
+																	}
+																}
+																test matches {
+																	BOOLEAN_CONTEXT_EXPRESSION[at0100] matches {    -- BOOLEAN_CONTEXT_EXPRESSION
+																		expression matches {"$ferritin > 800 || $TSAT >= 50 || $HRC <2.5 || $CHr > 36"}
+																	}
+																}
+															}
+														}
+													}
+												}
+												test matches {
+													BOOLEAN_CONTEXT_EXPRESSION[at0028] matches {    -- CONTEXT_EXPRESSION
+														name matches {"feHbNotOk"}
+														expression matches {"($ferritin >= 100 && $TSAT <= 20 && $HRC > 10 && $CHr < 30)  || ($ferritin < 100 && $TSAT < 20 && $HRC > 10 && $CHr < 30) || ($hemoglonibDiff  < 10 || $hemoglobin <110)"}
+													}
+												}
+											}
+										}
+										override_type matches {|2|}
+									}
+								}
+								execution_type matches {|0|}
+								repeat_spec matches {
+									TASK_REPEAT[at0020] matches {*}    -- Repeat indefinitely
+								}
+							}
+						}
+						execution_type matches {|1|}
+					}
+				}
+				execution_type matches {|0|}
+			}
+		}
+	}
+
+ontology
+	term_definitions = <
+		["en"] = <
+			items = <
+				["at0000"] = <
+					text = <"Kidney Anemia Treatment Plan">
+					description = <"kidney_anemia_treatment">
+				>
+				["at0001"] = <
+					text = <"Kidney anemia treatment plan - root">
+					description = <"*">
+				>
+				["at0002"] = <
+					text = <"Anemia Treatment">
+					description = <"*">
+				>
+				["at0003"] = <
+					text = <"Initial Data and Prescription">
+					description = <"*">
+				>
+				["at0005"] = <
+					text = <"Enter initial Hb and Ferritin measurements">
+					description = <"*">
+				>
+				["at0006"] = <
+					text = <"Enter initial Hb and Ferritin measurements">
+					description = <"*">
+				>
+				["at0007"] = <
+					text = <"Initial prescription for epoetin and Fe supplement">
+					description = <"*">
+				>
+				["at0008"] = <
+					text = <"Prescribe the dose of epoetin in the iron supplement.">
+					description = <"*">
+				>
+				["at0009"] = <
+					text = <"Treatment Monitoring and Adjustment">
+					description = <"*">
+				>
+				["at0010"] = <
+					text = <"Hb Monitoring and Epoetin Adjustment">
+					description = <"*">
+				>
+				["at0011"] = <
+					text = <"Feritin Monitoring and Iron supplement Adjustment">
+					description = <"*">
+				>
+				["at0012"] = <
+					text = <"Epoetin Induction">
+					description = <"*">
+				>
+				["at0013"] = <
+					text = <"Hb Level Maintenance">
+					description = <"*">
+				>
+				["at0014"] = <
+					text = <"TASK_REPEAT">
+					description = <"*">
+				>
+				["at0015"] = <
+					text = <"Stop repeating group when target Hb level met">
+					description = <"*">
+				>
+				["at0016"] = <
+					text = <"Repeat indefinitely or until new kidney">
+					description = <"*">
+				>
+				["at0017"] = <
+					text = <"Adjustment of Epoetin">
+					description = <"*">
+				>
+				["at0018"] = <
+					text = <"SUB_PLAN">
+					description = <"*">
+				>
+				["at0019"] = <
+					text = <"TIMER_EVENT">
+					description = <"*">
+				>
+				["at0020"] = <
+					text = <"Repeat indefinitely">
+					description = <"*">
+				>
+				["at0021"] = <
+					text = <"Measures of iron stores parameters">
+					description = <"*">
+				>
+				["at0022"] = <
+					text = <"Wait 4 weeks">
+					description = <"*">
+				>
+				["at0023"] = <
+					text = <"Fe Level Comparison">
+					description = <"*">
+				>
+				["at0024"] = <
+					text = <"Normal iron stores and satisfactory response to epoetin">
+					description = <"*">
+				>
+				["at0025"] = <
+					text = <"Continue with maintenance therapy with iron.">
+					description = <"*">
+				>
+				["at0026"] = <
+					text = <"CONTEXT_EXPRESSION">
+					description = <"*">
+				>
+				["at0027"] = <
+					text = <"Insufficient iron stores or insufficient response to epoetin">
+					description = <"*">
+				>
+				["at0028"] = <
+					text = <"CONTEXT_EXPRESSION">
+					description = <"*">
+				>
+				["at0029"] = <
+					text = <"Iron replacement therapy">
+					description = <"*">
+				>
+				["at0030"] = <
+					text = <"Adjustment of iron supplement">
+					description = <"*">
+				>
+				["at0031"] = <
+					text = <"Measures of iron stores parameters">
+					description = <"*">
+				>
+				["at0032"] = <
+					text = <"Wait 7 days">
+					description = <"*">
+				>
+				["at0034"] = <
+					text = <"Iron stores and epoetin response check">
+					description = <"*">
+				>
+				["at0035"] = <
+					text = <"Satisfactory response to iron replacement and epoetin therapy">
+					description = <"*">
+				>
+				["at0036"] = <
+					text = <"Insufficient response to iron replacement or epoetin therapy">
+					description = <"*">
+				>
+				["at0037"] = <
+					text = <"Over response to iron replacement therapy">
+					description = <"*">
+				>
+				["at0038"] = <
+					text = <"Medication order Fe">
+					description = <"*">
+				>
+				["at0039"] = <
+					text = <"Further investigation of iron distribution disorder">
+					description = <"*">
+				>
+				["at0040"] = <
+					text = <"Continue with maintenance therapy with iron">
+					description = <"*">
+				>
+				["at0041"] = <
+					text = <"TASK_REPEAT">
+					description = <"*">
+				>
+				["at0043"] = <
+					text = <"ACTION">
+					description = <"*">
+				>
+				["at0044"] = <
+					text = <"ItemTree">
+					description = <"@ internal @">
+				>
+				["at0045"] = <
+					text = <"Enter initial Hb and Ferritin measurements">
+					description = <"*">
+				>
+				["at0046"] = <
+					text = <"CAPTURE_DATASET_SPEC-Hemoglobin value">
+					description = <"*">
+				>
+				["at0047"] = <
+					text = <"CAPTURE_DATASET_SPEC-Ferritin value">
+					description = <"*">
+				>
+				["at0048"] = <
+					text = <"CAPTURE_DATASET_SPEC-Medication order">
+					description = <"*">
+				>
+				["at0049"] = <
+					text = <"ACTION">
+					description = <"*">
+				>
+				["at0050"] = <
+					text = <"ItemTree">
+					description = <"@ internal @">
+				>
+				["at0051"] = <
+					text = <"Prescribe the dose of epoetin in the iron supplement.">
+					description = <"*">
+				>
+				["at0052"] = <
+					text = <"Adjustment of Epoetin">
+					description = <"*">
+				>
+				["at0053"] = <
+					text = <"Maintenance of the target hemoglobin">
+					description = <"*">
+				>
+				["at0054"] = <
+					text = <"CAPTURE_DATASET_SPEC-Medication order">
+					description = <"*">
+				>
+				["at0055"] = <
+					text = <"Maintain target hemoglobin.">
+					description = <"*">
+				>
+				["at0056"] = <
+					text = <"ACTION">
+					description = <"*">
+				>
+				["at0057"] = <
+					text = <"ItemTree">
+					description = <"@ internal @">
+				>
+				["at0058"] = <
+					text = <"Maintain target hemoglobin.">
+					description = <"*">
+				>
+				["at0059"] = <
+					text = <"Hemoglobin value">
+					description = <"*">
+				>
+				["at0060"] = <
+					text = <"Measure hemoglobin value">
+					description = <"*">
+				>
+				["at0061"] = <
+					text = <"ACTION">
+					description = <"*">
+				>
+				["at0062"] = <
+					text = <"ItemTree">
+					description = <"@ internal @">
+				>
+				["at0063"] = <
+					text = <"Measure hemoglobin value">
+					description = <"*">
+				>
+				["at0064"] = <
+					text = <"CAPTURE_DATASET_SPEC-Hemoglobin value">
+					description = <"*">
+				>
+				["at0065"] = <
+					text = <"TIMER_EVENT">
+					description = <"*">
+				>
+				["at0066"] = <
+					text = <"Measures of iron stores parameters">
+					description = <"*">
+				>
+				["at0067"] = <
+					text = <"ACTION">
+					description = <"*">
+				>
+				["at0068"] = <
+					text = <"CAPTURE_DATASET_SPEC-Stocks of iron">
+					description = <"*">
+				>
+				["at0069"] = <
+					text = <"ItemTree">
+					description = <"@ internal @">
+				>
+				["at0070"] = <
+					text = <"Measures of iron stores parameters">
+					description = <"*">
+				>
+				["at0072"] = <
+					text = <"Continue with maintenance therapy with iron.">
+					description = <"*">
+				>
+				["at0073"] = <
+					text = <"ACTION">
+					description = <"*">
+				>
+				["at0074"] = <
+					text = <"ItemTree">
+					description = <"@ internal @">
+				>
+				["at0075"] = <
+					text = <"Continue with maintenance therapy with iron.">
+					description = <"*">
+				>
+				["at0076"] = <
+					text = <"CAPTURE_DATASET_SPEC-Medication order">
+					description = <"*">
+				>
+				["at0077"] = <
+					text = <"Adjustment of iron supplement">
+					description = <"*">
+				>
+				["at0078"] = <
+					text = <"ACTION">
+					description = <"*">
+				>
+				["at0079"] = <
+					text = <"ItemTree">
+					description = <"@ internal @">
+				>
+				["at0080"] = <
+					text = <"Adjustment of iron supplement">
+					description = <"*">
+				>
+				["at0081"] = <
+					text = <"CAPTURE_DATASET_SPEC-Medication order">
+					description = <"*">
+				>
+				["at0082"] = <
+					text = <"CAPTURE_DATASET_SPEC-Stocks of iron">
+					description = <"*">
+				>
+				["at0083"] = <
+					text = <"Measures of iron stores parameters">
+					description = <"*">
+				>
+				["at0084"] = <
+					text = <"ACTION">
+					description = <"*">
+				>
+				["at0085"] = <
+					text = <"ItemTree">
+					description = <"@ internal @">
+				>
+				["at0086"] = <
+					text = <"Measures of iron stores parameters">
+					description = <"*">
+				>
+				["at0089"] = <
+					text = <"BOOLEAN_CONTEXT_EXPRESSION">
+					description = <"*">
+				>
+				["at0090"] = <
+					text = <"CAPTURE_DATASET_SPEC-Medication order">
+					description = <"*">
+				>
+				["at0091"] = <
+					text = <"Continue with maintenance therapy with iron.">
+					description = <"*">
+				>
+				["at0092"] = <
+					text = <"ACTION">
+					description = <"*">
+				>
+				["at0093"] = <
+					text = <"ItemTree">
+					description = <"@ internal @">
+				>
+				["at0094"] = <
+					text = <"Continue with maintenance therapy with iron.">
+					description = <"*">
+				>
+				["at0095"] = <
+					text = <"BOOLEAN_CONTEXT_EXPRESSION">
+					description = <"*">
+				>
+				["at0096"] = <
+					text = <"Further investigation of iron distribution disorder">
+					description = <"*">
+				>
+				["at0097"] = <
+					text = <"ACTION">
+					description = <"*">
+				>
+				["at0098"] = <
+					text = <"ItemTree">
+					description = <"@ internal @">
+				>
+				["at0099"] = <
+					text = <"Further investigation of iron distribution disorder">
+					description = <"*">
+				>
+				["at0100"] = <
+					text = <"BOOLEAN_CONTEXT_EXPRESSION">
+					description = <"*">
+				>
+				["at0101"] = <
+					text = <"TIMER_EVENT">
+					description = <"*">
+				>
+				["at0102"] = <
+					text = <"Continue with maintenance therapy with iron">
+					description = <"*">
+				>
+				["at0103"] = <
+					text = <"DEFINED_ACTION">
+					description = <"*">
+				>
+				["at0104"] = <
+					text = <"ACTION">
+					description = <"*">
+				>
+				["at0105"] = <
+					text = <"ItemTree">
+					description = <"@ internal @">
+				>
+				["at0106"] = <
+					text = <"Continue with maintenance therapy with iron">
+					description = <"*">
+				>
+				["at0107"] = <
+					text = <"CAPTURE_DATASET_SPEC-Medication order">
+					description = <"*">
+				>
+				["at0108"] = <
+					text = <"Fe High Enough or Too High">
+					description = <"*">
+				>
+				["at0109"] = <
+					text = <"BOOLEAN_CONTEXT_EXPRESSION">
+					description = <"*">
+				>
+			>
+		>
+	>
